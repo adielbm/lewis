@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="400" height="320" role="img" aria-label="Lewis structure">
+  <style>
+    .bond { stroke: #1f2a44; stroke-width: 4; stroke-linecap: round; }
+    .atom { fill: #111827; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+    .electron { fill: #0f172a; }
+    .ion-bracket { fill: none; stroke: #1f2a44; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .ion-charge { fill: #111827; font-weight: 600; dominant-baseline: middle; }
+  </style>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 36px;">
+    <line class="bond" x1="174" y1="200" x2="146" y2="200" />
+    <line class="bond" x1="226" y1="200" x2="254" y2="200" />
+    <line class="bond" x1="204.50" y1="174" x2="204.50" y2="146" />
+    <line class="bond" x1="195.50" y1="174" x2="195.50" y2="146" />
+    <circle class="electron" cx="225.50" cy="125" r="3" />
+    <circle class="electron" cx="225.50" cy="115" r="3" />
+    <circle class="electron" cx="174.50" cy="115" r="3" />
+    <circle class="electron" cx="174.50" cy="125" r="3" />
+    <circle class="electron" cx="125" cy="174.50" r="3" />
+    <circle class="electron" cx="115" cy="174.50" r="3" />
+    <circle class="electron" cx="115" cy="225.50" r="3" />
+    <circle class="electron" cx="125" cy="225.50" r="3" />
+    <circle class="electron" cx="94.50" cy="195" r="3" />
+    <circle class="electron" cx="94.50" cy="205" r="3" />
+    <circle class="electron" cx="285" cy="174.50" r="3" />
+    <circle class="electron" cx="275" cy="174.50" r="3" />
+    <circle class="electron" cx="275" cy="225.50" r="3" />
+    <circle class="electron" cx="285" cy="225.50" r="3" />
+    <circle class="electron" cx="305.50" cy="205" r="3" />
+    <circle class="electron" cx="305.50" cy="195" r="3" />
+    <text class="atom" x="200" y="200" dy="0.04em">C</text>
+    <text class="atom" x="200" y="120" dy="0.04em">O</text>
+    <text class="atom" x="120" y="200" dy="0.04em">O</text>
+    <text class="atom" x="280" y="200" dy="0.04em">O</text>
+  </g>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 25px;">
+    <path class="ion-bracket" d="M 102 88 H 88 V 232 H 102" />
+    <path class="ion-bracket" d="M 298 88 H 312 V 232 H 298" />
+    <text class="ion-charge" x="322" y="98">2-</text>
+  </g>
+</svg>

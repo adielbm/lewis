@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="400" height="320" role="img" aria-label="Lewis structure">
+  <style>
+    .bond { stroke: #1f2a44; stroke-width: 4; stroke-linecap: round; }
+    .atom { fill: #111827; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+    .electron { fill: #0f172a; }
+    .ion-bracket { fill: none; stroke: #1f2a44; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .ion-charge { fill: #111827; font-weight: 600; dominant-baseline: middle; }
+  </style>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 36px;">
+    <line class="bond" x1="146" y1="120" x2="174" y2="120" />
+    <line class="bond" x1="200" y1="174" x2="200" y2="146" />
+    <line class="bond" x1="254" y1="120" x2="226" y2="120" />
+    <circle class="electron" cx="205" cy="94.50" r="3" />
+    <circle class="electron" cx="195" cy="94.50" r="3" />
+    <text class="atom" x="200" y="120" dy="0.04em">N</text>
+    <text class="atom" x="120" y="120" dy="0.04em">H</text>
+    <text class="atom" x="200" y="200" dy="0.04em">H</text>
+    <text class="atom" x="280" y="120" dy="0.04em">H</text>
+  </g>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 25px;">
+  </g>
+</svg>

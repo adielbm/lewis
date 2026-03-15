@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lewis Structure SVG Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <style>
+      :root {
+        --paper: #f4efe3;
+        --mist: #d9e7d7;
+        --ink: #16253d;
+        --ink-soft: #3a4f70;
+        --accent: #cc5f2b;
+        --accent-strong: #a54418;
+        --surface: rgba(255, 255, 255, 0.76);
+        --surface-strong: rgba(255, 255, 255, 0.9);
+        --error-bg: #ffe8e0;
+        --error-text: #8c2d12;
+        --warn-bg: #fff4d8;
+        --warn-text: #8a6509;
+        --border: rgba(22, 37, 61, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Fraunces", Georgia, serif;
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 700px at 8% -12%, #f9d9b8 0%, transparent 60%),
+          radial-gradient(1200px 700px at 100% 0%, #c7e4d4 0%, transparent 56%),
+          linear-gradient(165deg, var(--paper), #ebf3e8 56%, #e4efe4);
+      }
+
+      .page {
+        margin: 0 auto;
+        padding: 36px 20px 44px;
+      }
+
+      .hero {
+        animation: rise 440ms cubic-bezier(0.17, 0.84, 0.44, 1);
+      }
+
+      .title {
+        margin: 0;
+        letter-spacing: 0.02em;
+        font-size: clamp(1.9rem, 4.2vw, 3rem);
+      }
+
+      .subtitle {
+        margin: 8px 0 0;
+        max-width: 68ch;
+        color: var(--ink-soft);
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .workspace {
+        margin-top: 26px;
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
+        gap: 16px;
+      }
+
+      .panel {
+        backdrop-filter: blur(2px);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: 0 20px 42px rgba(14, 33, 58, 0.09);
+        padding: 18px;
+        animation: rise 520ms cubic-bezier(0.17, 0.84, 0.44, 1);
+      }
+
+      .panel:nth-child(2) {
+        animation-delay: 90ms;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .label {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+      }
+
+      select,
+      input,
+      textarea,
+      button {
+        font: inherit;
+      }
+
+      select,
+      input {
+        border-radius: 11px;
+        border: 1px solid var(--border);
+        background: #fff;
+        padding: 8px 10px;
+      }
+
+      textarea {
+        margin-top: 12px;
+        width: 100%;
+        min-height: 360px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--surface-strong);
+        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+        line-height: 1.45;
+        padding: 14px;
+        resize: vertical;
+      }
+
+      textarea:focus-visible,
+      input:focus-visible,
+      button:focus-visible,
+      select:focus-visible {
+        outline: 2px solid color-mix(in oklab, var(--accent), white 35%);
+        outline-offset: 2px;
+      }
+
+      .style-card {
+        margin-top: 14px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: color-mix(in oklab, var(--surface-strong), white 12%);
+        padding: 10px 12px 12px;
+      }
+
+      .style-card > summary {
+        cursor: pointer;
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        user-select: none;
+      }
+
+      .style-grid {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .style-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .style-field > span {
+        color: var(--ink-soft);
+        font-size: 0.84rem;
+      }
+
+      .style-field-wide {
+        grid-column: 1 / -1;
+      }
+
+      .style-card .hint {
+        margin-top: 10px;
+        font-size: 0.82rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      button {
+        border: 0;
+        border-radius: 12px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      }
+
+      .primary {
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), #da733d);
+        box-shadow: 0 8px 16px rgba(186, 89, 37, 0.3);
+      }
+
+      .secondary {
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid var(--border);
+      }
+
+      button:hover:enabled {
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .hint {
+        margin: 10px 0 0;
+        font-size: 0.9rem;
+        color: var(--ink-soft);
+      }
+
+      .message {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+        white-space: pre-wrap;
+        font-size: 0.85rem;
+      }
+
+      .error {
+        background: var(--error-bg);
+        color: var(--error-text);
+      }
+
+      .warning {
+        background: var(--warn-bg);
+        color: var(--warn-text);
+      }
+
+      .preview-wrap {
+        min-height: 480px;
+        border-radius: 14px;
+        border: 1px dashed color-mix(in oklab, var(--ink), white 65%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(253, 253, 253, 0.82));
+        display: grid;
+        place-items: center;
+        overflow: auto;
+        padding: 18px;
+      }
+
+      .preview-wrap svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .preview-placeholder {
+        color: var(--ink-soft);
+        font-size: 0.95rem;
+        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      }
+
+      @keyframes rise {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 940px) {
+        .workspace {
+          grid-template-columns: 1fr;
+        }
+
+        textarea {
+          min-height: 290px;
+        }
+
+        .preview-wrap {
+          min-height: 320px;
+        }
+
+        .style-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <h1 class="title">Lewis Structure SVG Generator</h1>
+      </header>
+
+      <section class="workspace">
+        <section class="panel">
+          <div class="row">
+            <p class="label">Structure input</p>
+            <select id="exampleSelect" aria-label="Choose a sample structure"></select>
+          </div>
+
+          <textarea id="dslInput" spellcheck="false" aria-label="Lewis DSL input"></textarea>
+
+          <div class="actions">
+            <button id="generateBtn" class="primary" type="button">Generate SVG</button>
+            <button id="downloadBtn" class="secondary" type="button" disabled>Download SVG</button>
+          </div>
+
+          <details class="style-card" open>
+            <summary>Style controls</summary>
+
+            <div class="style-grid">
+              <label class="style-field style-field-wide">
+                <span>Font preset</span>
+                <select id="fontPreset" aria-label="Font preset">
+                  <option value="classic">Classic serif</option>
+                  <option value="academic">Academic serif</option>
+                  <option value="modern">Modern serif</option>
+                  <option value="mono">Monospace</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </label>
+
+              <label class="style-field style-field-wide">
+                <span>Font family override (CSS font-family value)</span>
+                <input
+                  id="fontFamilyInput"
+                  type="text"
+                  value="'Times New Roman', 'Cambria', serif"
+                  aria-label="Font family override"
+                />
+              </label>
+
+              <label class="style-field">
+                <span>Grid step</span>
+                <input id="gridStepInput" type="number" min="40" max="320" step="1" value="80" />
+              </label>
+
+              <label class="style-field">
+                <span>Margin</span>
+                <input id="marginInput" type="number" min="8" max="220" step="1" value="120" />
+              </label>
+
+              <label class="style-field">
+                <span>Atom radius</span>
+                <input id="atomRadiusInput" type="number" min="4" max="80" step="0.5" value="26" />
+              </label>
+
+              <label class="style-field">
+                <span>Atom font size</span>
+                <input id="atomFontSizeInput" type="number" min="10" max="96" step="1" value="36" />
+              </label>
+
+              <label class="style-field">
+                <span>Charge font size</span>
+                <input id="chargeFontSizeInput" type="number" min="8" max="72" step="1" value="25" />
+              </label>
+
+              <label class="style-field">
+                <span>Bond width</span>
+                <input id="bondWidthInput" type="number" min="0.6" max="12" step="0.1" value="4" />
+              </label>
+
+              <label class="style-field">
+                <span>Bond gap</span>
+                <input id="bondGapInput" type="number" min="1" max="40" step="0.5" value="9" />
+              </label>
+
+              <label class="style-field">
+                <span>Electron distance</span>
+                <input id="dotDistanceInput" type="number" min="4" max="80" step="0.5" value="25.5" />
+              </label>
+
+              <label class="style-field">
+                <span>Electron gap</span>
+                <input id="dotGapInput" type="number" min="1" max="24" step="0.5" value="10" />
+              </label>
+
+              <label class="style-field">
+                <span>Electron radius</span>
+                <input id="dotRadiusInput" type="number" min="0.5" max="12" step="0.1" value="3" />
+              </label>
+            </div>
+
+            <div class="actions">
+              <button id="resetStyleBtn" class="secondary" type="button">Reset style</button>
+            </div>
+            <p class="hint">Style controls apply immediately as you edit them.</p>
+          </details>
+
+          <p class="hint">Tip: press Cmd/Ctrl + Enter to regenerate.</p>
+          <div id="errorBox" class="message error" hidden></div>
+          <div id="warningBox" class="message warning" hidden></div>
+        </section>
+
+        <section class="panel">
+          <div class="row">
+            <p class="label">Preview</p>
+          </div>
+
+          <div id="svgContainer" class="preview-wrap">
+            <p class="preview-placeholder">Your generated SVG will appear here.</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./app.mjs"></script>
+  </body>
+</html>

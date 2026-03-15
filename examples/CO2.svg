@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140" role="img" aria-label="Lewis structure">
+  <style>
+    .bond { stroke: #1f2a44; stroke-width: 4; stroke-linecap: round; }
+    .atom { fill: #111827; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+    .electron { fill: #0f172a; }
+    .ion-bracket { fill: none; stroke: #1f2a44; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .ion-charge { fill: #111827; font-weight: 600; dominant-baseline: middle; }
+  </style>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 36px;">
+    <line class="bond" x1="94" y1="35.50" x2="66" y2="35.50" />
+    <line class="bond" x1="94" y1="44.50" x2="66" y2="44.50" />
+    <line class="bond" x1="146" y1="44.50" x2="174" y2="44.50" />
+    <line class="bond" x1="146" y1="35.50" x2="174" y2="35.50" />
+    <circle class="electron" cx="45" cy="14.50" r="3" />
+    <circle class="electron" cx="35" cy="14.50" r="3" />
+    <circle class="electron" cx="35" cy="65.50" r="3" />
+    <circle class="electron" cx="45" cy="65.50" r="3" />
+    <circle class="electron" cx="205" cy="14.50" r="3" />
+    <circle class="electron" cx="195" cy="14.50" r="3" />
+    <circle class="electron" cx="195" cy="65.50" r="3" />
+    <circle class="electron" cx="205" cy="65.50" r="3" />
+    <text class="atom" x="120" y="40" dy="0.04em">C</text>
+    <text class="atom" x="40" y="40" dy="0.04em">O</text>
+    <text class="atom" x="200" y="40" dy="0.04em">O</text>
+  </g>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 25px;">
+  </g>
+</svg>

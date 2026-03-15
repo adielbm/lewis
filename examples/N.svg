@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Lewis structure">
+  <style>
+    .bond { stroke: #1f2a44; stroke-width: 4; stroke-linecap: round; }
+    .atom { fill: #111827; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+    .electron { fill: #0f172a; }
+    .ion-bracket { fill: none; stroke: #1f2a44; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .ion-charge { fill: #111827; font-weight: 600; dominant-baseline: middle; }
+  </style>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 36px;">
+    <circle class="electron" cx="145.50" cy="125" r="3" />
+    <circle class="electron" cx="145.50" cy="115" r="3" />
+    <circle class="electron" cx="120" cy="94.50" r="3" />
+    <circle class="electron" cx="120" cy="145.50" r="3" />
+    <circle class="electron" cx="94.50" cy="120" r="3" />
+    <text class="atom" x="120" y="120" dy="0.04em">N</text>
+  </g>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 25px;">
+  </g>
+</svg>
