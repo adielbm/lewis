@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 420" width="1300" height="420" role="img" aria-label="Lewis structure">
+  <style>
+    .bond { stroke: #000000; stroke-width: 4; stroke-linecap: square; }
+    .atom { fill: #000000; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+    .electron { fill: #000000; }
+    .ion-bracket { fill: none; stroke: #000000; stroke-width: 2.4; stroke-linecap: square; stroke-linejoin: round; }
+    .ion-charge { fill: #000000; font-weight: 600; dominant-baseline: middle; }
+  </style>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 36px;">
+    <line class="bond" x1="465.20" y1="231.57" x2="508.43" y2="274.80" />
+    <line class="bond" x1="471.57" y1="225.20" x2="514.80" y2="268.43" />
+    <line class="bond" x1="556" y1="134.50" x2="584" y2="134.50" />
+    <line class="bond" x1="556" y1="125.50" x2="584" y2="125.50" />
+    <line class="bond" x1="668.43" y1="225.20" x2="625.20" y2="268.43" />
+    <line class="bond" x1="674.80" y1="231.57" x2="631.57" y2="274.80" />
+    <line class="bond" x1="774.50" y1="184" x2="774.50" y2="156" />
+    <line class="bond" x1="765.50" y1="184" x2="765.50" y2="156" />
+    <line class="bond" x1="156" y1="210" x2="184" y2="210" />
+    <line class="bond" x1="236" y1="210" x2="264" y2="210" />
+    <line class="bond" x1="316" y1="210" x2="344" y2="210" />
+    <line class="bond" x1="104" y1="210" x2="76" y2="210" />
+    <line class="bond" x1="130" y1="184" x2="130" y2="156" />
+    <line class="bond" x1="130" y1="236" x2="130" y2="264" />
+    <line class="bond" x1="210" y1="184" x2="210" y2="156" />
+    <line class="bond" x1="210" y1="236" x2="210" y2="264" />
+    <line class="bond" x1="290" y1="184" x2="290" y2="156" />
+    <line class="bond" x1="290" y1="236" x2="290" y2="264" />
+    <line class="bond" x1="370" y1="156" x2="370" y2="184" />
+    <line class="bond" x1="424" y1="210" x2="396" y2="210" />
+    <line class="bond" x1="468.38" y1="191.62" x2="511.62" y2="148.38" />
+    <line class="bond" x1="628.38" y1="148.38" x2="671.62" y2="191.62" />
+    <line class="bond" x1="556" y1="290" x2="584" y2="290" />
+    <line class="bond" x1="530" y1="104" x2="530" y2="76" />
+    <line class="bond" x1="610" y1="104" x2="610" y2="76" />
+    <line class="bond" x1="530" y1="316" x2="530" y2="344" />
+    <line class="bond" x1="610" y1="316" x2="610" y2="344" />
+    <line class="bond" x1="744" y1="210" x2="716" y2="210" />
+    <line class="bond" x1="796" y1="210" x2="824" y2="210" />
+    <line class="bond" x1="904" y1="210" x2="876" y2="210" />
+    <line class="bond" x1="930" y1="184" x2="930" y2="156" />
+    <line class="bond" x1="930" y1="236" x2="930" y2="264" />
+    <line class="bond" x1="956" y1="210" x2="984" y2="210" />
+    <line class="bond" x1="1010" y1="184" x2="1010" y2="156" />
+    <line class="bond" x1="1010" y1="236" x2="1010" y2="264" />
+    <line class="bond" x1="1036" y1="210" x2="1064" y2="210" />
+    <line class="bond" x1="1151.62" y1="148.38" x2="1108.38" y2="191.62" />
+    <line class="bond" x1="1151.62" y1="271.62" x2="1108.38" y2="228.38" />
+    <line class="bond" x1="1196" y1="130" x2="1224" y2="130" />
+    <line class="bond" x1="1196" y1="290" x2="1224" y2="290" />
+    <circle class="electron" cx="365" cy="235" r="3" />
+    <circle class="electron" cx="375" cy="235" r="3" />
+    <circle class="electron" cx="755.86" cy="110.20" r="3" />
+    <circle class="electron" cx="748.79" cy="117.27" r="3" />
+    <circle class="electron" cx="791.21" cy="117.27" r="3" />
+    <circle class="electron" cx="784.14" cy="110.20" r="3" />
+    <circle class="electron" cx="855" cy="187" r="3" />
+    <circle class="electron" cx="845" cy="187" r="3" />
+    <circle class="electron" cx="845" cy="235" r="3" />
+    <circle class="electron" cx="855" cy="235" r="3" />
+    <circle class="electron" cx="1090" cy="187" r="3" />
+    <circle class="electron" cx="1090" cy="235" r="3" />
+    <circle class="electron" cx="1175" cy="107" r="3" />
+    <circle class="electron" cx="1165" cy="107" r="3" />
+    <circle class="electron" cx="1165" cy="155" r="3" />
+    <circle class="electron" cx="1175" cy="155" r="3" />
+    <circle class="electron" cx="1175" cy="267" r="3" />
+    <circle class="electron" cx="1165" cy="267" r="3" />
+    <circle class="electron" cx="1165" cy="315" r="3" />
+    <circle class="electron" cx="1175" cy="315" r="3" />
+    <text class="atom" x="130" y="210" dy="0.04em">C</text>
+    <text class="atom" x="210" y="210" dy="0.04em">C</text>
+    <text class="atom" x="290" y="210" dy="0.04em">C</text>
+    <text class="atom" x="370" y="210" dy="0.04em">N</text>
+    <text class="atom" x="50" y="210" dy="0.04em">H</text>
+    <text class="atom" x="130" y="130" dy="0.04em">H</text>
+    <text class="atom" x="130" y="290" dy="0.04em">H</text>
+    <text class="atom" x="210" y="130" dy="0.04em">H</text>
+    <text class="atom" x="210" y="290" dy="0.04em">H</text>
+    <text class="atom" x="290" y="130" dy="0.04em">H</text>
+    <text class="atom" x="290" y="290" dy="0.04em">H</text>
+    <text class="atom" x="370" y="130" dy="0.04em">H</text>
+    <text class="atom" x="450" y="210" dy="0.04em">C</text>
+    <text class="atom" x="530" y="130" dy="0.04em">C</text>
+    <text class="atom" x="610" y="130" dy="0.04em">C</text>
+    <text class="atom" x="690" y="210" dy="0.04em">C</text>
+    <text class="atom" x="530" y="290" dy="0.04em">C</text>
+    <text class="atom" x="610" y="290" dy="0.04em">C</text>
+    <text class="atom" x="530" y="50" dy="0.04em">H</text>
+    <text class="atom" x="610" y="50" dy="0.04em">H</text>
+    <text class="atom" x="530" y="370" dy="0.04em">H</text>
+    <text class="atom" x="610" y="370" dy="0.04em">H</text>
+    <text class="atom" x="770" y="210" dy="0.04em">C</text>
+    <text class="atom" x="770" y="130" dy="0.04em">O</text>
+    <text class="atom" x="850" y="210" dy="0.04em">O</text>
+    <text class="atom" x="930" y="210" dy="0.04em">C</text>
+    <text class="atom" x="930" y="130" dy="0.04em">H</text>
+    <text class="atom" x="930" y="290" dy="0.04em">H</text>
+    <text class="atom" x="1010" y="210" dy="0.04em">C</text>
+    <text class="atom" x="1010" y="130" dy="0.04em">H</text>
+    <text class="atom" x="1010" y="290" dy="0.04em">H</text>
+    <text class="atom" x="1090" y="210" dy="0.04em">N</text>
+    <text class="atom" x="1170" y="130" dy="0.04em">C</text>
+    <text class="atom" x="1170" y="290" dy="0.04em">C</text>
+    <text class="atom" x="1250" y="130" dy="0.04em">H</text>
+    <text class="atom" x="1250" y="290" dy="0.04em">H</text>
+  </g>
+  <g style="font-family: &apos;Times New Roman&apos;, &apos;Cambria&apos;, serif; font-size: 25px;">
+  </g>
+</svg>

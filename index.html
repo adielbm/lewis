@@ -308,9 +308,11 @@
             <button id="generateBtn" class="primary" type="button">Generate SVG</button>
             <button id="downloadBtn" class="secondary" type="button" disabled>Download SVG</button>
           </div>
+    <div id="errorBox" class="message error" hidden></div>
+          <div id="warningBox" class="message warning" hidden></div>
 
-          <details class="style-card" open>
-            <summary>Style controls</summary>
+          <details class="style-card" close>
+            <summary>Style</summary>
 
             <div class="style-grid">
               <label class="style-field style-field-wide">
@@ -403,12 +405,8 @@
             <div class="actions">
               <button id="resetStyleBtn" class="secondary" type="button">Reset style</button>
             </div>
-            <p class="hint">Style controls apply immediately as you edit them.</p>
           </details>
-
-          <p class="hint">Tip: press Cmd/Ctrl + Enter to regenerate.</p>
-          <div id="errorBox" class="message error" hidden></div>
-          <div id="warningBox" class="message warning" hidden></div>
+      
         </section>
 
         <section class="panel">

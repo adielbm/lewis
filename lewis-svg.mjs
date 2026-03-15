@@ -137,6 +137,43 @@ function normalizeDslInput(input) {
   return trimmed;
 }
 
+function normalizeAtomSymbol(rawSymbol) {
+  return rawSymbol.charAt(0).toUpperCase() + rawSymbol.slice(1).toLowerCase();
+}
+
+function parseAtomIdentity(rawToken, symbolCounter) {
+  const token = rawToken.trim();
+
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(token)) {
+    return null;
+  }
+
+  const numberedMatch = token.match(/^([A-Za-z]+)(\d+)$/);
+  if (numberedMatch) {
+    const symbol = normalizeAtomSymbol(numberedMatch[1]);
+    const numericSuffix = Number.parseInt(numberedMatch[2], 10);
+
+    if (Number.isFinite(numericSuffix)) {
+      const currentMax = symbolCounter.get(symbol) ?? 0;
+      symbolCounter.set(symbol, Math.max(currentMax, numericSuffix));
+    }
+
+    return {
+      id: `${symbol}${numberedMatch[2]}`,
+      symbol,
+    };
+  }
+
+  const symbol = normalizeAtomSymbol(token);
+  const nextIndex = (symbolCounter.get(symbol) ?? 0) + 1;
+  symbolCounter.set(symbol, nextIndex);
+
+  return {
+    id: `${symbol}${nextIndex}`,
+    symbol,
+  };
+}
+
 function resolveAtomReference(refText, atomsById, atomsBySymbol, diagnostics, line) {
   const reference = refText.trim();
   if (!reference) {
@@ -257,6 +294,7 @@ function parseLewisDsl(input) {
 
   const lines = source.split(/\r?\n/);
   const symbolCounter = new Map();
+  const atomLineById = new Map();
 
   for (let i = 0; i < lines.length; i += 1) {
     const lineNumber = i + 1;
@@ -281,7 +319,9 @@ function parseLewisDsl(input) {
     }
 
     const rawSymbol = parts[0].trim();
-    if (!/^[A-Za-z][A-Za-z0-9]*$/.test(rawSymbol)) {
+    const atomIdentity = parseAtomIdentity(rawSymbol, symbolCounter);
+
+    if (!atomIdentity) {
       diagnostics.push({
         severity: "error",
         line: lineNumber,
@@ -290,13 +330,9 @@ function parseLewisDsl(input) {
       continue;
     }
 
-    const symbol = rawSymbol.charAt(0).toUpperCase() + rawSymbol.slice(1).toLowerCase();
-    const index = (symbolCounter.get(symbol) ?? 0) + 1;
-    symbolCounter.set(symbol, index);
-
     const atom = {
-      id: `${symbol}${index}`,
-      symbol,
+      id: atomIdentity.id,
+      symbol: atomIdentity.symbol,
       line: lineNumber,
       placement: null,
       placementReference: null,
@@ -306,6 +342,17 @@ function parseLewisDsl(input) {
       grid: null,
       anchorId: null,
     };
+
+    if (atomLineById.has(atom.id)) {
+      diagnostics.push({
+        severity: "error",
+        line: lineNumber,
+        message: `Duplicate atom ID \"${atom.id}\" was already declared on line ${atomLineById.get(atom.id)}.`,
+      });
+      continue;
+    }
+
+    atomLineById.set(atom.id, lineNumber);
 
     for (const tokenRaw of parts.slice(1)) {
       const token = tokenRaw.trim();
