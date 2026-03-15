@@ -61,7 +61,12 @@ const warningBox = document.querySelector("#warningBox");
 const fontPresetSelect = document.querySelector("#fontPreset");
 const fontFamilyInput = document.querySelector("#fontFamilyInput");
 const resetStyleButton = document.querySelector("#resetStyleBtn");
-const dotDistanceInput = document.querySelector("#dotDistanceInput");
+const dotDistanceInputMap = Object.freeze({
+  top: document.querySelector("#dotDistanceTopInput"),
+  right: document.querySelector("#dotDistanceRightInput"),
+  bottom: document.querySelector("#dotDistanceBottomInput"),
+  left: document.querySelector("#dotDistanceLeftInput"),
+});
 
 const styleInputMap = Object.freeze({
   gridStep: document.querySelector("#gridStepInput"),
@@ -76,85 +81,45 @@ const styleInputMap = Object.freeze({
 });
 
 const DOT_DISTANCE_KEYS = Object.freeze(["top", "right", "bottom", "left"]);
-const DOT_DISTANCE_MIN = 4;
-const DOT_DISTANCE_MAX = 80;
+const STYLE_LABELS = Object.freeze({
+  gridStep: "Grid step",
+  margin: "Margin",
+  atomRadius: "Atom radius",
+  atomFontSize: "Atom font size",
+  chargeFontSize: "Charge font size",
+  bondWidth: "Bond width",
+  bondGap: "Bond gap",
+  dotGap: "Electron gap",
+  dotRadius: "Electron radius",
+});
+const DOT_DISTANCE_LABELS = Object.freeze({
+  top: "Electron distance (top)",
+  right: "Electron distance (right)",
+  bottom: "Electron distance (bottom)",
+  left: "Electron distance (left)",
+});
 
 let currentSvg = "";
 
-function clampNumber(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function readNumericStyleInput(input, fallback) {
+function readNumericStyleInput(input, label) {
   const parsed = Number.parseFloat(input.value);
   if (!Number.isFinite(parsed)) {
-    input.value = String(fallback);
-    return fallback;
+    throw new Error(`${label} must be a valid number.`);
   }
 
-  const min = input.min ? Number.parseFloat(input.min) : Number.NEGATIVE_INFINITY;
-  const max = input.max ? Number.parseFloat(input.max) : Number.POSITIVE_INFINITY;
-  const clamped = clampNumber(parsed, min, max);
-
-  input.value = String(clamped);
-  return clamped;
+  input.value = String(parsed);
+  return parsed;
 }
 
-function formatDotDistanceValue(dotDistance) {
-  return DOT_DISTANCE_KEYS.map((side) => String(dotDistance[side])).join(", ");
-}
+function readDotDistanceInputs(inputMap) {
+  const dotDistance = {};
 
-function parseDotDistanceInput(input, fallback) {
-  const normalizedFallback = DOT_DISTANCE_KEYS.reduce((result, side) => {
-    const value = Number.parseFloat(fallback[side]);
-    result[side] = Number.isFinite(value) ? value : 25.5;
-    return result;
-  }, {});
-
-  const restoreFallback = () => {
-    input.value = formatDotDistanceValue(normalizedFallback);
-    return { ...normalizedFallback };
-  };
-
-  const values = input.value
-    .split(",")
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0);
-
-  if (values.length === 0) {
-    return restoreFallback();
+  for (const side of DOT_DISTANCE_KEYS) {
+    const input = inputMap[side];
+    dotDistance[side] = readNumericStyleInput(input, DOT_DISTANCE_LABELS[side]);
   }
 
-  let parsedValues = [];
-
-  if (values.length === 1) {
-    const singleValue = Number.parseFloat(values[0]);
-    if (!Number.isFinite(singleValue)) {
-      return restoreFallback();
-    }
-    parsedValues = [singleValue, singleValue, singleValue, singleValue];
-  } else if (values.length === 4) {
-    parsedValues = values.map((value) => Number.parseFloat(value));
-    if (parsedValues.some((value) => !Number.isFinite(value))) {
-      return restoreFallback();
-    }
-  } else {
-    return restoreFallback();
-  }
-
-  const [top, right, bottom, left] = parsedValues.map((value) =>
-    clampNumber(value, DOT_DISTANCE_MIN, DOT_DISTANCE_MAX),
-  );
-
-  const parsedDistance = {
-    top,
-    right,
-    bottom,
-    left,
-  };
-
-  input.value = formatDotDistanceValue(parsedDistance);
-  return parsedDistance;
+  return dotDistance;
 }
 
 function setPresetFromFontValue(fontValue) {
@@ -167,7 +132,9 @@ function applyStyleDefaults() {
     input.value = String(STYLE_DEFAULTS[key]);
   }
 
-  dotDistanceInput.value = formatDotDistanceValue(STYLE_DEFAULTS.dotDistance);
+  for (const side of DOT_DISTANCE_KEYS) {
+    dotDistanceInputMap[side].value = String(STYLE_DEFAULTS.dotDistance[side]);
+  }
 
   fontFamilyInput.value = STYLE_DEFAULTS.fontFamily;
   setPresetFromFontValue(STYLE_DEFAULTS.fontFamily);
@@ -177,10 +144,10 @@ function getRenderOptionsFromUi() {
   const options = {};
 
   for (const [key, input] of Object.entries(styleInputMap)) {
-    options[key] = readNumericStyleInput(input, STYLE_DEFAULTS[key]);
+    options[key] = readNumericStyleInput(input, STYLE_LABELS[key] ?? key);
   }
 
-  options.dotDistance = parseDotDistanceInput(dotDistanceInput, STYLE_DEFAULTS.dotDistance);
+  options.dotDistance = readDotDistanceInputs(dotDistanceInputMap);
 
   const fontFamily = fontFamilyInput.value.trim();
   options.fontFamily = fontFamily || STYLE_DEFAULTS.fontFamily;
@@ -257,7 +224,9 @@ for (const input of Object.values(styleInputMap)) {
   input.addEventListener("input", renderStructure);
 }
 
-dotDistanceInput.addEventListener("input", renderStructure);
+for (const input of Object.values(dotDistanceInputMap)) {
+  input.addEventListener("input", renderStructure);
+}
 
 fontPresetSelect.addEventListener("change", () => {
   if (fontPresetSelect.value === "custom") {

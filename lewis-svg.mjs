@@ -42,7 +42,7 @@ function formatNumber(value) {
 
 function normalizeDotDistance(dotDistance) {
   if (Number.isFinite(dotDistance)) {
-    const value = Math.max(0.5, Number.parseFloat(dotDistance));
+    const value = Number.parseFloat(dotDistance);
     return {
       top: value,
       right: value,
@@ -61,7 +61,7 @@ function normalizeDotDistance(dotDistance) {
       return fallback;
     }
 
-    return Math.max(0.5, parsed);
+    return parsed;
   };
 
   return {
