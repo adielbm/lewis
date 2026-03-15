@@ -2,10 +2,15 @@ import { buildLewisStructure } from "./lewis-svg.mjs";
 
 const STYLE_DEFAULTS = Object.freeze({
   gridStep: 80,
-  margin: 120,
+  margin: 50,
   atomRadius: 26,
   bondGap: 9,
-  dotDistance: 25.5,
+  dotDistance: Object.freeze({
+    top: 23,
+    right: 25,
+    bottom: 25,
+    left: 25,
+  }),
   dotGap: 10,
   dotRadius: 3,
   fontFamily: "'Times New Roman', 'Cambria', serif",
@@ -56,6 +61,7 @@ const warningBox = document.querySelector("#warningBox");
 const fontPresetSelect = document.querySelector("#fontPreset");
 const fontFamilyInput = document.querySelector("#fontFamilyInput");
 const resetStyleButton = document.querySelector("#resetStyleBtn");
+const dotDistanceInput = document.querySelector("#dotDistanceInput");
 
 const styleInputMap = Object.freeze({
   gridStep: document.querySelector("#gridStepInput"),
@@ -65,10 +71,13 @@ const styleInputMap = Object.freeze({
   chargeFontSize: document.querySelector("#chargeFontSizeInput"),
   bondWidth: document.querySelector("#bondWidthInput"),
   bondGap: document.querySelector("#bondGapInput"),
-  dotDistance: document.querySelector("#dotDistanceInput"),
   dotGap: document.querySelector("#dotGapInput"),
   dotRadius: document.querySelector("#dotRadiusInput"),
 });
+
+const DOT_DISTANCE_KEYS = Object.freeze(["top", "right", "bottom", "left"]);
+const DOT_DISTANCE_MIN = 4;
+const DOT_DISTANCE_MAX = 80;
 
 let currentSvg = "";
 
@@ -91,6 +100,63 @@ function readNumericStyleInput(input, fallback) {
   return clamped;
 }
 
+function formatDotDistanceValue(dotDistance) {
+  return DOT_DISTANCE_KEYS.map((side) => String(dotDistance[side])).join(", ");
+}
+
+function parseDotDistanceInput(input, fallback) {
+  const normalizedFallback = DOT_DISTANCE_KEYS.reduce((result, side) => {
+    const value = Number.parseFloat(fallback[side]);
+    result[side] = Number.isFinite(value) ? value : 25.5;
+    return result;
+  }, {});
+
+  const restoreFallback = () => {
+    input.value = formatDotDistanceValue(normalizedFallback);
+    return { ...normalizedFallback };
+  };
+
+  const values = input.value
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+
+  if (values.length === 0) {
+    return restoreFallback();
+  }
+
+  let parsedValues = [];
+
+  if (values.length === 1) {
+    const singleValue = Number.parseFloat(values[0]);
+    if (!Number.isFinite(singleValue)) {
+      return restoreFallback();
+    }
+    parsedValues = [singleValue, singleValue, singleValue, singleValue];
+  } else if (values.length === 4) {
+    parsedValues = values.map((value) => Number.parseFloat(value));
+    if (parsedValues.some((value) => !Number.isFinite(value))) {
+      return restoreFallback();
+    }
+  } else {
+    return restoreFallback();
+  }
+
+  const [top, right, bottom, left] = parsedValues.map((value) =>
+    clampNumber(value, DOT_DISTANCE_MIN, DOT_DISTANCE_MAX),
+  );
+
+  const parsedDistance = {
+    top,
+    right,
+    bottom,
+    left,
+  };
+
+  input.value = formatDotDistanceValue(parsedDistance);
+  return parsedDistance;
+}
+
 function setPresetFromFontValue(fontValue) {
   const matchedPreset = Object.entries(FONT_PRESETS).find(([, value]) => value === fontValue);
   fontPresetSelect.value = matchedPreset ? matchedPreset[0] : "custom";
@@ -100,6 +166,8 @@ function applyStyleDefaults() {
   for (const [key, input] of Object.entries(styleInputMap)) {
     input.value = String(STYLE_DEFAULTS[key]);
   }
+
+  dotDistanceInput.value = formatDotDistanceValue(STYLE_DEFAULTS.dotDistance);
 
   fontFamilyInput.value = STYLE_DEFAULTS.fontFamily;
   setPresetFromFontValue(STYLE_DEFAULTS.fontFamily);
@@ -111,6 +179,8 @@ function getRenderOptionsFromUi() {
   for (const [key, input] of Object.entries(styleInputMap)) {
     options[key] = readNumericStyleInput(input, STYLE_DEFAULTS[key]);
   }
+
+  options.dotDistance = parseDotDistanceInput(dotDistanceInput, STYLE_DEFAULTS.dotDistance);
 
   const fontFamily = fontFamilyInput.value.trim();
   options.fontFamily = fontFamily || STYLE_DEFAULTS.fontFamily;
@@ -186,6 +256,8 @@ dslInput.addEventListener("keydown", (event) => {
 for (const input of Object.values(styleInputMap)) {
   input.addEventListener("input", renderStructure);
 }
+
+dotDistanceInput.addEventListener("input", renderStructure);
 
 fontPresetSelect.addEventListener("change", () => {
   if (fontPresetSelect.value === "custom") {

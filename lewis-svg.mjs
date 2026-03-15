@@ -15,12 +15,19 @@ const BOND_ORDER = Object.freeze({
   triple: 3,
 });
 
+const DEFAULT_DOT_DISTANCE = Object.freeze({
+  top: 25.5,
+  right: 25.5,
+  bottom: 25.5,
+  left: 25.5,
+});
+
 const DEFAULT_RENDER_OPTIONS = Object.freeze({
   gridStep: 80,
   margin: 120,
   atomRadius: 26,
   bondGap: 9,
-  dotDistance: 25.5,
+  dotDistance: DEFAULT_DOT_DISTANCE,
   dotGap: 10,
   dotRadius: 3,
   fontFamily: "'Times New Roman', 'Cambria', serif",
@@ -31,6 +38,38 @@ const DEFAULT_RENDER_OPTIONS = Object.freeze({
 
 function formatNumber(value) {
   return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/\.00$/, "");
+}
+
+function normalizeDotDistance(dotDistance) {
+  if (Number.isFinite(dotDistance)) {
+    const value = Math.max(0.5, Number.parseFloat(dotDistance));
+    return {
+      top: value,
+      right: value,
+      bottom: value,
+      left: value,
+    };
+  }
+
+  const source = dotDistance && typeof dotDistance === "object" ? dotDistance : {};
+
+  const readSide = (side) => {
+    const fallback = DEFAULT_DOT_DISTANCE[side];
+    const parsed = Number.parseFloat(source[side]);
+
+    if (!Number.isFinite(parsed)) {
+      return fallback;
+    }
+
+    return Math.max(0.5, parsed);
+  };
+
+  return {
+    top: readSide("top"),
+    right: readSide("right"),
+    bottom: readSide("bottom"),
+    left: readSide("left"),
+  };
 }
 
 function escapeXml(text) {
@@ -560,8 +599,11 @@ function renderElectronDots(atomX, atomY, direction, count, options) {
   const ux = dx / length;
   const uy = dy / length;
 
-  const baseX = atomX + ux * options.dotDistance;
-  const baseY = atomY + uy * options.dotDistance;
+  const horizontalDistance = ux >= 0 ? options.dotDistance.right : options.dotDistance.left;
+  const verticalDistance = uy >= 0 ? options.dotDistance.bottom : options.dotDistance.top;
+
+  const baseX = atomX + ux * horizontalDistance;
+  const baseY = atomY + uy * verticalDistance;
   const perpX = -uy;
   const perpY = ux;
 
@@ -608,9 +650,14 @@ export function buildLewisStructure(input, renderOptions = {}) {
     throw new Error(`Could not build Lewis structure:\n${buildDiagnosticMessage(errors)}`);
   }
 
-  const options = {
+  const mergedOptions = {
     ...DEFAULT_RENDER_OPTIONS,
     ...renderOptions,
+  };
+
+  const options = {
+    ...mergedOptions,
+    dotDistance: normalizeDotDistance(mergedOptions.dotDistance),
   };
 
   const atoms = parsed.atoms.filter((atom) => atom.grid);
@@ -722,11 +769,11 @@ export function buildLewisStructure(input, renderOptions = {}) {
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${formatNumber(minX)} ${formatNumber(minY)} ${formatNumber(width)} ${formatNumber(height)}" width="${formatNumber(width)}" height="${formatNumber(height)}" role="img" aria-label="Lewis structure">`,
     "  <style>",
-    `    .bond { stroke: #1f2a44; stroke-width: ${formatNumber(options.bondWidth)}; stroke-linecap: round; }`,
-    "    .atom { fill: #111827; font-weight: 500; text-anchor: middle; dominant-baseline: central; }",
-    "    .electron { fill: #0f172a; }",
-    "    .ion-bracket { fill: none; stroke: #1f2a44; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }",
-    "    .ion-charge { fill: #111827; font-weight: 600; dominant-baseline: middle; }",
+    `    .bond { stroke: #000000; stroke-width: ${formatNumber(options.bondWidth)}; stroke-linecap: square; }`,
+    "    .atom { fill: #000000; font-weight: 500; text-anchor: middle; dominant-baseline: central; }",
+    "    .electron { fill: #000000; }",
+    "    .ion-bracket { fill: none; stroke: #000000; stroke-width: 2.4; stroke-linecap: square; stroke-linejoin: round; }",
+    "    .ion-charge { fill: #000000; font-weight: 600; dominant-baseline: middle; }",
     "  </style>",
     `  <g style="font-family: ${escapeXml(options.fontFamily)}; font-size: ${formatNumber(options.atomFontSize)}px;">`,
     ...bondElements.map((line) => `    ${line}`),
