@@ -1,5 +1,3 @@
-# Lewis Structure SVG Generator
-
 
 ## examples
 
