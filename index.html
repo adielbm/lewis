@@ -1,426 +1,497 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lewis Structure SVG Generator</title>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-    />
-    <style>
-      :root {
-        --paper: #f4efe3;
-        --mist: #d9e7d7;
-        --ink: #16253d;
-        --ink-soft: #3a4f70;
-        --accent: #cc5f2b;
-        --accent-strong: #a54418;
-        --surface: rgba(255, 255, 255, 0.76);
-        --surface-strong: rgba(255, 255, 255, 0.9);
-        --error-bg: #ffe8e0;
-        --error-text: #8c2d12;
-        --warn-bg: #fff4d8;
-        --warn-text: #8a6509;
-        --border: rgba(22, 37, 61, 0.2);
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lewis structure</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+  <style>
+    :root {
+      --bg: #f1f1f1;
+      --ink: #1f2430;
+      --ink-soft: #5f6571;
+      --accent: #ffeac1;
+      --surface: #ffffff;
+      --error-bg: #ffe9e9;
+      --error-text: #8a1e1e;
+      --warn-bg: #fff7df;
+      --warn-text: #7a5b00;
+      --border: #aaa7a2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Roboto", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .page {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 1em;
+    }
+
+    .title {
+      margin: 0;
+      letter-spacing: 0.01em;
+      font-size: clamp(1.4rem, 3.2vw, 2.1rem);
+      font-weight: 700;
+    }
+
+    header {
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .subtitle {
+      margin: 2px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .desc {
+      margin: 7px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.77rem;
+      line-height: 1.4;
+    }
+
+    .repo-link {
+      margin-top: 7px;
+      display: inline-block;
+      font-size: 0.79rem;
+    }
+
+  
+
+    .footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      border-top: 1px solid var(--border);
+      padding: 12px 0;
+    }
+
+    .workspace {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
+      gap: 12px;
+    }
+
+
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .row.row-start {
+      justify-content: flex-start;
+    }
+
+    .label {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+    }
+
+    input,
+    textarea,
+    button {
+      font: inherit;
+    }
+
+    input {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 7px 9px;
+    }
+
+    textarea {
+      margin-top: 10px;
+      width: 100%;
+      min-height: 350px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      line-height: 1.4;
+      padding: 12px;
+      resize: vertical;
+    }
+
+    button:focus-visible {
+      outline: 2px solid color-mix(in oklab, var(--accent), white 40%);
+      outline-offset: 2px;
+    }
+
+    .examples-row {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .example-btn {
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.86rem;
+    }
+
+    .example-btn.is-active {
+      background: var(--accent);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+    .style-card {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 11px 11px;
+    }
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: "Fraunces", Georgia, serif;
-        color: var(--ink);
-        background:
-          radial-gradient(1200px 700px at 8% -12%, #f9d9b8 0%, transparent 60%),
-          radial-gradient(1200px 700px at 100% 0%, #c7e4d4 0%, transparent 56%),
-          linear-gradient(165deg, var(--paper), #ebf3e8 56%, #e4efe4);
-      }
+    .style-card>summary {
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+      user-select: none;
+    }
 
-      .page {
-        margin: 0 auto;
-        padding: 36px 20px 44px;
-      }
+    .style-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
 
-      .hero {
-        animation: rise 440ms cubic-bezier(0.17, 0.84, 0.44, 1);
-      }
+    .style-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
 
-      .title {
-        margin: 0;
-        letter-spacing: 0.02em;
-        font-size: clamp(1.9rem, 4.2vw, 3rem);
-      }
+    .style-field>span {
+      color: var(--ink-soft);
+      font-size: 0.8rem;
+    }
 
-      .subtitle {
-        margin: 8px 0 0;
-        max-width: 68ch;
-        color: var(--ink-soft);
-        font-size: 1rem;
-        line-height: 1.55;
-      }
+    .style-field-wide {
+      grid-column: 1 / -1;
+    }
 
+    .style-card .hint {
+      margin-top: 10px;
+      font-size: 0.82rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview-actions {
+margin: auto;
+    display: flex;
+    gap: 8px;
+    padding: 1em;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+
+    .secondary {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+
+    button:hover:enabled {
+      background: #ececec;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      margin: 10px 0 0;
+      font-size: 0.84rem;
+      color: var(--ink-soft);
+    }
+
+    .message {
+      margin-top: 10px;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      font-size: 0.8rem;
+    }
+
+    .error {
+      background: var(--error-bg);
+      color: var(--error-text);
+    }
+
+    .warning {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+    }
+
+    .preview-wrap {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      overflow: auto;
+      padding: 14px;
+    }
+
+    .preview-wrap svg {
+      max-width: 100%;
+      height: auto;
+      border: 1px dashed #cfd4de;
+    }
+
+    .preview-placeholder {
+      color: var(--ink-soft);
+      font-size: 0.86rem;
+      font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(16, 22, 31, 0.38);
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .confirm-overlay[hidden] {
+      display: none;
+    }
+
+    .confirm-card {
+      width: min(100%, 380px);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+    }
+
+    .confirm-title {
+      margin: 0;
+      font-size: 0.98rem;
+    }
+
+    .confirm-text {
+      margin: 7px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .confirm-actions {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    @media (max-width: 940px) {
       .workspace {
-        margin-top: 26px;
-        display: grid;
-        grid-template-columns: minmax(300px, 1fr) minmax(320px, 1fr);
-        gap: 16px;
-      }
-
-      .panel {
-        backdrop-filter: blur(2px);
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        box-shadow: 0 20px 42px rgba(14, 33, 58, 0.09);
-        padding: 18px;
-        animation: rise 520ms cubic-bezier(0.17, 0.84, 0.44, 1);
-      }
-
-      .panel:nth-child(2) {
-        animation-delay: 90ms;
-      }
-
-      .row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .label {
-        margin: 0;
-        font-size: 0.95rem;
-        color: var(--ink-soft);
-      }
-
-      select,
-      input,
-      textarea,
-      button {
-        font: inherit;
-      }
-
-      select,
-      input {
-        border-radius: 11px;
-        border: 1px solid var(--border);
-        background: #fff;
-        padding: 8px 10px;
+        grid-template-columns: 1fr;
       }
 
       textarea {
-        margin-top: 12px;
-        width: 100%;
-        min-height: 360px;
-        border-radius: 14px;
-        border: 1px solid var(--border);
-        background: var(--surface-strong);
-        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-        line-height: 1.45;
-        padding: 14px;
-        resize: vertical;
-      }
-
-      textarea:focus-visible,
-      input:focus-visible,
-      button:focus-visible,
-      select:focus-visible {
-        outline: 2px solid color-mix(in oklab, var(--accent), white 35%);
-        outline-offset: 2px;
-      }
-
-      .style-card {
-        margin-top: 14px;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        background: color-mix(in oklab, var(--surface-strong), white 12%);
-        padding: 10px 12px 12px;
-      }
-
-      .style-card > summary {
-        cursor: pointer;
-        font-size: 0.95rem;
-        color: var(--ink-soft);
-        user-select: none;
-      }
-
-      .style-grid {
-        margin-top: 10px;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .style-field {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-
-      .style-field > span {
-        color: var(--ink-soft);
-        font-size: 0.84rem;
-      }
-
-      .style-field-wide {
-        grid-column: 1 / -1;
-      }
-
-      .style-card .hint {
-        margin-top: 10px;
-        font-size: 0.82rem;
-      }
-
-      .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      button {
-        border: 0;
-        border-radius: 12px;
-        padding: 10px 15px;
-        cursor: pointer;
-        transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
-      }
-
-      .primary {
-        color: #fff;
-        background: linear-gradient(135deg, var(--accent), #da733d);
-        box-shadow: 0 8px 16px rgba(186, 89, 37, 0.3);
-      }
-
-      .secondary {
-        background: #fff;
-        color: var(--ink);
-        border: 1px solid var(--border);
-      }
-
-      button:hover:enabled {
-        transform: translateY(-1px);
-      }
-
-      button:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-      }
-
-      .hint {
-        margin: 10px 0 0;
-        font-size: 0.9rem;
-        color: var(--ink-soft);
-      }
-
-      .message {
-        margin-top: 12px;
-        border-radius: 10px;
-        padding: 10px 12px;
-        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-        white-space: pre-wrap;
-        font-size: 0.85rem;
-      }
-
-      .error {
-        background: var(--error-bg);
-        color: var(--error-text);
-      }
-
-      .warning {
-        background: var(--warn-bg);
-        color: var(--warn-text);
+        min-height: 260px;
       }
 
       .preview-wrap {
-        border-radius: 14px;
-        border: 1px dashed color-mix(in oklab, var(--ink), white 65%);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(253, 253, 253, 0.82));
-        display: grid;
-        place-items: center;
-        overflow: auto;
-        padding: 18px;
+        min-height: 320px;
       }
 
-      .preview-wrap svg {
-        max-width: 100%;
-        height: auto;
-        border: 3px dashed lightgray;
+      .style-grid {
+        grid-template-columns: 1fr;
       }
+    }
+  </style>
+</head>
 
-      .preview-placeholder {
-        color: var(--ink-soft);
-        font-size: 0.95rem;
-        font-family: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-      }
+<body>
+  <main class="page">
+    <header>
+      <h1 class="title">Lewis structure</h1>
+      <p class="subtitle">diagram generator</p>
+    </header>
 
-      @keyframes rise {
-        from {
-          transform: translateY(10px);
-          opacity: 0;
-        }
+    <section class="workspace">
+      <section class="panel">
+        <div class="row row-start">
+        </div>
 
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
+        <div id="exampleButtons" class="examples-row" aria-label="Example structures"></div>
 
-      @media (max-width: 940px) {
-        .workspace {
-          grid-template-columns: 1fr;
-        }
+        <textarea id="dslInput" spellcheck="false" aria-label="Lewis DSL input"></textarea>
 
-        textarea {
-          min-height: 290px;
-        }
+        <div id="errorBox" class="message error" hidden></div>
+        <div id="warningBox" class="message warning" hidden></div>
 
-        .preview-wrap {
-          min-height: 320px;
-        }
+        <details class="style-card" close>
+          <summary>Style</summary>
 
-        .style-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="page">
-      <header class="hero">
-        <h1 class="title">Lewis Structure SVG Generator</h1>
-      </header>
+          <div class="style-grid">
+            <label class="style-field style-field-wide">
+              <span>Font preset</span>
+              <select id="fontPreset" aria-label="Font preset">
+                <option value="classic">Classic serif</option>
+                <option value="academic">Academic serif</option>
+                <option value="modern">Modern serif</option>
+                <option value="mono">Monospace</option>
+                <option value="custom">Custom</option>
+              </select>
+            </label>
 
-      <section class="workspace">
-        <section class="panel">
-          <div class="row">
-            <p class="label">Structure input</p>
-            <select id="exampleSelect" aria-label="Choose a sample structure"></select>
+            <label class="style-field style-field-wide">
+              <span>Font family override (CSS font-family value)</span>
+              <input id="fontFamilyInput" type="text" value="'Times New Roman', 'Cambria', serif"
+                aria-label="Font family override" />
+            </label>
+
+            <label class="style-field">
+              <span>Grid step</span>
+              <input id="gridStepInput" type="number" step="1" value="80" />
+            </label>
+
+            <label class="style-field">
+              <span>Margin</span>
+              <input id="marginInput" type="number" step="1" value="120" />
+            </label>
+
+            <label class="style-field">
+              <span>Atom radius</span>
+              <input id="atomRadiusInput" type="number" step="0.5" value="26" />
+            </label>
+
+            <label class="style-field">
+              <span>Atom font size</span>
+              <input id="atomFontSizeInput" type="number" step="1" value="36" />
+            </label>
+
+            <label class="style-field">
+              <span>Charge font size</span>
+              <input id="chargeFontSizeInput" type="number" step="1" value="25" />
+            </label>
+
+            <label class="style-field">
+              <span>Bond width</span>
+              <input id="bondWidthInput" type="number" step="0.1" value="4" />
+            </label>
+
+            <label class="style-field">
+              <span>Bond gap</span>
+              <input id="bondGapInput" type="number" step="0.5" value="9" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron distance top</span>
+              <input id="dotDistanceTopInput" type="number" step="0.5" value="23" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron distance right</span>
+              <input id="dotDistanceRightInput" type="number" step="0.5" value="25" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron distance bottom</span>
+              <input id="dotDistanceBottomInput" type="number" step="0.5" value="25" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron distance left</span>
+              <input id="dotDistanceLeftInput" type="number" step="0.5" value="25" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron gap</span>
+              <input id="dotGapInput" type="number" step="0.5" value="10" />
+            </label>
+
+            <label class="style-field">
+              <span>Electron radius</span>
+              <input id="dotRadiusInput" type="number" step="0.1" value="3" />
+            </label>
           </div>
-
-          <textarea id="dslInput" spellcheck="false" aria-label="Lewis DSL input"></textarea>
 
           <div class="actions">
-            <button id="generateBtn" class="primary" type="button">Generate SVG</button>
-            <button id="downloadBtn" class="secondary" type="button" disabled>Download SVG</button>
+            <button id="resetStyleBtn" class="secondary" type="button">Reset style</button>
           </div>
-    <div id="errorBox" class="message error" hidden></div>
-          <div id="warningBox" class="message warning" hidden></div>
+        </details>
 
-          <details class="style-card" close>
-            <summary>Style</summary>
-
-            <div class="style-grid">
-              <label class="style-field style-field-wide">
-                <span>Font preset</span>
-                <select id="fontPreset" aria-label="Font preset">
-                  <option value="classic">Classic serif</option>
-                  <option value="academic">Academic serif</option>
-                  <option value="modern">Modern serif</option>
-                  <option value="mono">Monospace</option>
-                  <option value="custom">Custom</option>
-                </select>
-              </label>
-
-              <label class="style-field style-field-wide">
-                <span>Font family override (CSS font-family value)</span>
-                <input
-                  id="fontFamilyInput"
-                  type="text"
-                  value="'Times New Roman', 'Cambria', serif"
-                  aria-label="Font family override"
-                />
-              </label>
-
-              <label class="style-field">
-                <span>Grid step</span>
-                <input id="gridStepInput" type="number" step="1" value="80" />
-              </label>
-
-              <label class="style-field">
-                <span>Margin</span>
-                <input id="marginInput" type="number" step="1" value="120" />
-              </label>
-
-              <label class="style-field">
-                <span>Atom radius</span>
-                <input id="atomRadiusInput" type="number" step="0.5" value="26" />
-              </label>
-
-              <label class="style-field">
-                <span>Atom font size</span>
-                <input id="atomFontSizeInput" type="number" step="1" value="36" />
-              </label>
-
-              <label class="style-field">
-                <span>Charge font size</span>
-                <input id="chargeFontSizeInput" type="number" step="1" value="25" />
-              </label>
-
-              <label class="style-field">
-                <span>Bond width</span>
-                <input id="bondWidthInput" type="number" step="0.1" value="4" />
-              </label>
-
-              <label class="style-field">
-                <span>Bond gap</span>
-                <input id="bondGapInput" type="number" step="0.5" value="9" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron distance top</span>
-                <input id="dotDistanceTopInput" type="number" step="0.5" value="23" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron distance right</span>
-                <input id="dotDistanceRightInput" type="number" step="0.5" value="25" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron distance bottom</span>
-                <input id="dotDistanceBottomInput" type="number" step="0.5" value="25" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron distance left</span>
-                <input id="dotDistanceLeftInput" type="number" step="0.5" value="25" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron gap</span>
-                <input id="dotGapInput" type="number" step="0.5" value="10" />
-              </label>
-
-              <label class="style-field">
-                <span>Electron radius</span>
-                <input id="dotRadiusInput" type="number" step="0.1" value="3" />
-              </label>
-            </div>
-
-            <div class="actions">
-              <button id="resetStyleBtn" class="secondary" type="button">Reset style</button>
-            </div>
-          </details>
-      
-        </section>
-
-        <section class="panel">
-          <div class="row">
-            <p class="label">Preview</p>
-          </div>
-
-          <div id="svgContainer" class="preview-wrap">
-            <p class="preview-placeholder">Your generated SVG will appear here.</p>
-          </div>
-        </section>
       </section>
-    </main>
 
-    <script type="module" src="./app.mjs"></script>
-  </body>
+      <section class="panel">
+          <div id="svgContainer" class="preview-wrap">
+          <p class="preview-placeholder">Your generated SVG will appear here.</p>
+        </div>
+        <div class="row row-start">
+          <div class="preview-actions">
+            <button id="downloadSvgBtn" class="secondary" type="button" disabled>SVG</button>
+            <button id="downloadPngBtn" class="secondary" type="button" disabled>PNG</button>
+          </div>
+        </div>
+
+     
+      </section>
+    </section>
+
+    <footer class="footer">
+      <a class="repo-link" href="https://github.com/adielbm/lewis" target="_blank" rel="noopener noreferrer">source code</a>
+    </footer>
+
+    <div id="confirmOverlay" class="confirm-overlay" hidden>
+      <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+        <h2 id="confirmTitle" class="confirm-title">Replace current code?</h2>
+        <p id="confirmText" class="confirm-text">You have custom edits. Load this example and discard current text?</p>
+        <div class="confirm-actions">
+          <button id="confirmCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="confirmAcceptBtn" class="primary" type="button">Replace</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+
 </html>

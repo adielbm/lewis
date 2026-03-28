@@ -51,13 +51,18 @@ O, left[C], pairs[top, bottom, left]
 O, right[C], pairs[top, bottom, right]`,
 };
 
+const CODE_STORAGE_KEY = "lewis.dsl.input.v1";
+
 const dslInput = document.querySelector("#dslInput");
-const exampleSelect = document.querySelector("#exampleSelect");
-const generateButton = document.querySelector("#generateBtn");
-const downloadButton = document.querySelector("#downloadBtn");
+const exampleButtons = document.querySelector("#exampleButtons");
+const downloadSvgButton = document.querySelector("#downloadSvgBtn");
+const downloadPngButton = document.querySelector("#downloadPngBtn");
 const svgContainer = document.querySelector("#svgContainer");
 const errorBox = document.querySelector("#errorBox");
 const warningBox = document.querySelector("#warningBox");
+const confirmOverlay = document.querySelector("#confirmOverlay");
+const confirmAcceptButton = document.querySelector("#confirmAcceptBtn");
+const confirmCancelButton = document.querySelector("#confirmCancelBtn");
 const fontPresetSelect = document.querySelector("#fontPreset");
 const fontFamilyInput = document.querySelector("#fontFamilyInput");
 const resetStyleButton = document.querySelector("#resetStyleBtn");
@@ -100,6 +105,98 @@ const DOT_DISTANCE_LABELS = Object.freeze({
 });
 
 let currentSvg = "";
+let activeExampleKey = null;
+let hasTypedCustomInput = false;
+
+function setDownloadButtonsEnabled(enabled) {
+  downloadSvgButton.disabled = !enabled;
+  downloadPngButton.disabled = !enabled;
+}
+
+function debounce(fn, waitMs) {
+  let timeoutId = null;
+
+  return (...args) => {
+    if (timeoutId) {
+      window.clearTimeout(timeoutId);
+    }
+
+    timeoutId = window.setTimeout(() => {
+      fn(...args);
+    }, waitMs);
+  };
+}
+
+function extractErrorLineNumbers(errorMessage) {
+  const lineNumbers = new Set();
+
+  for (const match of String(errorMessage).matchAll(/line\s+(\d+):/gi)) {
+    const parsed = Number.parseInt(match[1], 10);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      lineNumbers.add(parsed);
+    }
+  }
+
+  return [...lineNumbers].sort((a, b) => a - b);
+}
+
+function saveCodeDraft() {
+  try {
+    window.localStorage.setItem(CODE_STORAGE_KEY, dslInput.value);
+  } catch {
+    // Ignore storage failures (private mode, quota, etc.).
+  }
+}
+
+function loadSavedCodeDraft() {
+  try {
+    return window.localStorage.getItem(CODE_STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function confirmReplaceInApp() {
+  return new Promise((resolve) => {
+    const onAccept = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const onOverlayClick = (event) => {
+      if (event.target === confirmOverlay) {
+        onCancel();
+      }
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+    };
+
+    function cleanup() {
+      confirmOverlay.hidden = true;
+      confirmAcceptButton.removeEventListener("click", onAccept);
+      confirmCancelButton.removeEventListener("click", onCancel);
+      confirmOverlay.removeEventListener("click", onOverlayClick);
+      window.removeEventListener("keydown", onKeyDown);
+    }
+
+    confirmAcceptButton.addEventListener("click", onAccept);
+    confirmCancelButton.addEventListener("click", onCancel);
+    confirmOverlay.addEventListener("click", onOverlayClick);
+    window.addEventListener("keydown", onKeyDown);
+
+    confirmOverlay.hidden = false;
+    confirmAcceptButton.focus();
+  });
+}
 
 function readNumericStyleInput(input, label) {
   const parsed = Number.parseFloat(input.value);
@@ -162,17 +259,93 @@ function hideMessages() {
   warningBox.textContent = "";
 }
 
+function setActiveExampleButton(exampleKey) {
+  activeExampleKey = exampleKey;
+
+  for (const button of exampleButtons.querySelectorAll(".example-btn")) {
+    button.classList.toggle("is-active", button.dataset.exampleKey === exampleKey);
+  }
+}
+
+function buildWithSkippedInvalidLines(renderOptions) {
+  const originalLines = dslInput.value.split(/\r?\n/);
+  let activeLines = [...originalLines];
+  let activeLineMap = originalLines.map((_, index) => index + 1);
+  const skippedOriginalLineNumbers = new Set();
+
+  for (let pass = 0; pass < originalLines.length; pass += 1) {
+    const activeSource = activeLines.join("\n");
+
+    if (!activeSource.trim()) {
+      throw new Error("Could not build Lewis structure: no valid lines remain after skipping invalid or incomplete lines.");
+    }
+
+    try {
+      const result = buildLewisStructure(activeSource, renderOptions);
+      return {
+        result,
+        skippedLineNumbers: [...skippedOriginalLineNumbers].sort((a, b) => a - b),
+      };
+    } catch (error) {
+      const failedCurrentLineNumbers = extractErrorLineNumbers(error.message);
+
+      if (failedCurrentLineNumbers.length === 0) {
+        throw error;
+      }
+
+      const toRemove = new Set();
+      for (const currentLineNumber of failedCurrentLineNumbers) {
+        const zeroBasedIndex = currentLineNumber - 1;
+        if (zeroBasedIndex >= 0 && zeroBasedIndex < activeLines.length) {
+          toRemove.add(zeroBasedIndex);
+        }
+      }
+
+      if (toRemove.size === 0) {
+        throw error;
+      }
+
+      const nextLines = [];
+      const nextLineMap = [];
+
+      for (let i = 0; i < activeLines.length; i += 1) {
+        if (toRemove.has(i)) {
+          skippedOriginalLineNumbers.add(activeLineMap[i]);
+          continue;
+        }
+
+        nextLines.push(activeLines[i]);
+        nextLineMap.push(activeLineMap[i]);
+      }
+
+      activeLines = nextLines;
+      activeLineMap = nextLineMap;
+    }
+  }
+
+  throw new Error("Could not build Lewis structure after skipping invalid or incomplete lines.");
+}
+
 function renderStructure() {
   hideMessages();
 
   try {
     const renderOptions = getRenderOptionsFromUi();
-    const { svg, diagnostics } = buildLewisStructure(dslInput.value, renderOptions);
+    const { result, skippedLineNumbers } = buildWithSkippedInvalidLines(renderOptions);
+    const { svg, diagnostics } = result;
     currentSvg = svg;
     svgContainer.innerHTML = svg;
-    downloadButton.disabled = false;
+    setDownloadButtonsEnabled(true);
 
     const warnings = diagnostics.filter((item) => item.severity === "warning");
+    if (skippedLineNumbers.length > 0) {
+      warnings.push({
+        severity: "warning",
+        line: 0,
+        message: `Skipped invalid/incomplete line(s): ${skippedLineNumbers.join(", ")}.`,
+      });
+    }
+
     if (warnings.length > 0) {
       warningBox.hidden = false;
       warningBox.textContent = warnings
@@ -185,47 +358,74 @@ function renderStructure() {
   } catch (error) {
     currentSvg = "";
     svgContainer.innerHTML = "";
-    downloadButton.disabled = true;
+    setDownloadButtonsEnabled(false);
     errorBox.hidden = false;
     errorBox.textContent = error.message;
   }
 }
 
 function loadExample(exampleKey) {
+  if (!EXAMPLES[exampleKey]) {
+    return;
+  }
+
   dslInput.value = EXAMPLES[exampleKey] ?? "";
+  saveCodeDraft();
+  setActiveExampleButton(exampleKey);
+  hasTypedCustomInput = false;
   renderStructure();
 }
 
 for (const [key] of Object.entries(EXAMPLES)) {
-  const option = document.createElement("option");
-  option.value = key;
-  option.textContent = key.replaceAll("_", " ");
-  exampleSelect.append(option);
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "example-btn";
+  button.dataset.exampleKey = key;
+  button.textContent = key.replaceAll("_", " ");
+  button.addEventListener("click", async () => {
+    if (hasTypedCustomInput) {
+      const shouldReplace = await confirmReplaceInApp();
+      if (!shouldReplace) {
+        return;
+      }
+    }
+
+    if (activeExampleKey === key) {
+      return;
+    }
+
+    loadExample(key);
+  });
+  exampleButtons.append(button);
 }
+
+const scheduleRender = debounce(renderStructure, 160);
 
 applyStyleDefaults();
 
-exampleSelect.value = "CO2";
-loadExample("CO2");
+const savedDsl = loadSavedCodeDraft();
+if (savedDsl.trim()) {
+  dslInput.value = savedDsl;
+  setActiveExampleButton(null);
+  hasTypedCustomInput = true;
+  renderStructure();
+} else {
+  loadExample("CO2");
+}
 
-generateButton.addEventListener("click", renderStructure);
-
-exampleSelect.addEventListener("change", () => {
-  loadExample(exampleSelect.value);
-});
-
-dslInput.addEventListener("keydown", (event) => {
-  if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-    renderStructure();
-  }
+dslInput.addEventListener("input", () => {
+  hasTypedCustomInput = true;
+  setActiveExampleButton(null);
+  saveCodeDraft();
+  scheduleRender();
 });
 
 for (const input of Object.values(styleInputMap)) {
-  input.addEventListener("input", renderStructure);
+  input.addEventListener("input", scheduleRender);
 }
 
 for (const input of Object.values(dotDistanceInputMap)) {
-  input.addEventListener("input", renderStructure);
+  input.addEventListener("input", scheduleRender);
 }
 
 fontPresetSelect.addEventListener("change", () => {
@@ -239,20 +439,20 @@ fontPresetSelect.addEventListener("change", () => {
   }
 
   fontFamilyInput.value = preset;
-  renderStructure();
+  scheduleRender();
 });
 
 fontFamilyInput.addEventListener("input", () => {
   setPresetFromFontValue(fontFamilyInput.value.trim());
-  renderStructure();
+  scheduleRender();
 });
 
 resetStyleButton.addEventListener("click", () => {
   applyStyleDefaults();
-  renderStructure();
+  scheduleRender();
 });
 
-downloadButton.addEventListener("click", () => {
+downloadSvgButton.addEventListener("click", () => {
   if (!currentSvg) {
     return;
   }
@@ -268,4 +468,52 @@ downloadButton.addEventListener("click", () => {
   anchor.remove();
 
   URL.revokeObjectURL(url);
+});
+
+downloadPngButton.addEventListener("click", async () => {
+  if (!currentSvg) {
+    return;
+  }
+
+  const svgBlob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
+  const svgUrl = URL.createObjectURL(svgBlob);
+
+  try {
+    const image = new Image();
+    const loaded = new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = reject;
+    });
+
+    image.src = svgUrl;
+    await loaded;
+
+    const width = Math.max(1, Math.round(image.naturalWidth || 1200));
+    const height = Math.max(1, Math.round(image.naturalHeight || 900));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      throw new Error("Canvas is not available for PNG export.");
+    }
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+
+    const pngUrl = canvas.toDataURL("image/png");
+    const anchor = document.createElement("a");
+    anchor.href = pngUrl;
+    anchor.download = "lewis-structure.png";
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+  } catch (error) {
+    errorBox.hidden = false;
+    errorBox.textContent = error.message || "PNG export failed.";
+  } finally {
+    URL.revokeObjectURL(svgUrl);
+  }
 });
